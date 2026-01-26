@@ -37,9 +37,34 @@ function App() {
 
     setAspectRatio(config.aspectRatio);
 
-    var html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
+    const html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
     html5QrcodeScanner.render(onScanSuccess, onScanError);
-  }, []);
+
+    // Функция для удаления второго видео
+    const removeSecondVideo = () => {
+      const videos = document.getElementsByTagName("video");
+      if (videos.length > 1) {
+        // Удаляем второй video элемент
+        console.log("videos", videos); // Для отладки
+        videos[1].remove();
+        console.log("Second video element removed.");
+      }
+    };
+
+    // Используем setInterval для проверки, что элементы видео созданы
+    const interval = setInterval(() => {
+      const videos = document.getElementsByTagName("video");
+      if (videos.length > 1) {
+        removeSecondVideo();
+        clearInterval(interval); // Останавливаем интервал после удаления второго видео
+      }
+    }, 100); // Проверяем каждые 100мс
+
+    // Очистка при размонтировании компонента
+    return () => {
+      clearInterval(interval); // Останавливаем интервал при размонтировании
+    };
+  }, []); // Пустой массив зависимостей, чтобы эффект сработал только при монтировании компонента
 
   return (
     <div className="App">

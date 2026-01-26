@@ -14,7 +14,7 @@
 }
 
 #reader__scan_region {
-  min-height: 50vh;
+  // min-height: 50vh;
   max-height: 100vh;
 }
 
@@ -22,6 +22,10 @@
   max-height: 20vh;
 }
 
+.display-data {
+  z-index: 1000;
+  background-color: red;
+}
 // .App {
 //   text-align: center;
 // }
