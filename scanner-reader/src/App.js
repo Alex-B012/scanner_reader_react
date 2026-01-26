@@ -33,6 +33,7 @@ function App() {
       aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
       formatsToSupport: formatsToSupport,
+      disableFlip: true,
     };
 
     setAspectRatio(config.aspectRatio);
