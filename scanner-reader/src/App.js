@@ -40,31 +40,98 @@ function App() {
     const html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
     html5QrcodeScanner.render(onScanSuccess, onScanError);
 
-    // Функция для удаления второго видео
     const removeSecondVideo = () => {
       const videos = document.getElementsByTagName("video");
       if (videos.length > 1) {
-        // Удаляем второй video элемент
-        console.log("videos", videos); // Для отладки
+        console.log("videos", videos);
         videos[1].remove();
         console.log("Second video element removed.");
       }
+
+      const startBtns = document.getElementsByClassName("html5-qrcode-element");
+
+      if (startBtns.length > 1) {
+        console.log("startBtns", startBtns);
+        startBtns[1].remove();
+        console.log("Second startBtns element removed.");
+      }
+
+      const spans = document.querySelectorAll("span");
+
+      spans.forEach((span, index) => {
+        const buttons = span.querySelectorAll(".html5-qrcode-element");
+
+        if (
+          buttons.length === 2 &&
+          buttons[0].id === "html5-qrcode-button-camera-start" &&
+          buttons[1].id === "html5-qrcode-button-camera-stop"
+        ) {
+          const firstSpan = Array.from(spans).find(
+            (s) =>
+              s.querySelectorAll(".html5-qrcode-element").length === 2 &&
+              s.querySelector("#html5-qrcode-button-camera-start") &&
+              s.querySelector("#html5-qrcode-button-camera-stop"),
+          );
+
+          if (firstSpan && span !== firstSpan) {
+            span.remove();
+            console.log("Duplicate span removed:", span);
+          }
+        }
+      });
+
+      const shadedDivs = document.querySelectorAll("#qr-shaded-region");
+      if (shadedDivs.length > 1) {
+        shadedDivs.forEach((div, index) => {
+          if (index > 0) {
+            div.remove();
+            console.log("Duplicate qr-shaded-region removed.");
+          }
+        });
+      }
     };
 
-    // Используем setInterval для проверки, что элементы видео созданы
+    const pausedDivs = Array.from(document.querySelectorAll("div")).filter(
+      (div) =>
+        div.textContent.trim() === "Scanner paused" &&
+        div.style.position === "absolute" &&
+        div.style.display === "none",
+    );
+
+    if (pausedDivs.length > 1) {
+      pausedDivs.forEach((div, index) => {
+        if (index > 0) {
+          div.remove();
+          console.log("Duplicate 'Scanner paused' div removed.");
+        }
+      });
+    }
+
+    const zoomDivs = Array.from(document.querySelectorAll("div")).filter(
+      (div) => div.querySelector("#html5-qrcode-input-range-zoom"),
+    );
+
+    if (zoomDivs.length > 1) {
+      zoomDivs.forEach((div, index) => {
+        if (index > 0) {
+          div.remove();
+          console.log("Duplicate zoom slider removed.");
+        }
+      });
+    }
+
     const interval = setInterval(() => {
       const videos = document.getElementsByTagName("video");
       if (videos.length > 1) {
         removeSecondVideo();
-        clearInterval(interval); // Останавливаем интервал после удаления второго видео
+        clearInterval(interval);
       }
-    }, 100); // Проверяем каждые 100мс
+    }, 250);
 
-    // Очистка при размонтировании компонента
     return () => {
-      clearInterval(interval); // Останавливаем интервал при размонтировании
+      clearInterval(interval);
     };
-  }, []); // Пустой массив зависимостей, чтобы эффект сработал только при монтировании компонента
+  }, []);
 
   return (
     <div className="App">
