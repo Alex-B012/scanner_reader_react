@@ -1,17 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import "./App.scss";
 
 function App() {
   const [aspectRatio, setAspectRatio] = useState(0);
+  const [decodedText, setDecodedText] = useState("");
+  const [decodedResult, setDecodedResult] = useState({
+    decodedText: "null",
+    result: {
+      debugData: {
+        decoderName: "null",
+      },
+      format: {
+        format: -1,
+        formatName: "null",
+      },
+      text: "null",
+    },
+  });
+
+  const [arrOfDecodedResults, setArrOfDecodedResults] = useState([]);
+  const [count, setCount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
+  const scannedSetRef = useRef(new Set());
 
   useEffect(() => {
-    function onScanSuccess(decodedText, decodedResult) {
-      console.log(`Scan result: ${decodedText}`, decodedResult);
-      html5QrcodeScanner.stop();
-    }
-
     function onScanError(errorMessage) {
+      setErrorMessage(errorMessage);
       console.error("Scan error: ", errorMessage);
     }
 
@@ -39,6 +54,35 @@ function App() {
 
     const html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
     html5QrcodeScanner.render(onScanSuccess, onScanError);
+
+    function onScanSuccess(decodedText, decodedResult) {
+      console.log("onScanSuccess FIRED");
+      setCount((prev) => prev + 1);
+      setDecodedText(decodedText);
+      setDecodedResult(decodedResult);
+
+      setArrOfDecodedResults((prev) => {
+        console.log("CHECK decodedText:", decodedText);
+        console.log("SET contents:", [...scannedSetRef.current]);
+
+        if (scannedSetRef.current.has(decodedText)) {
+          console.log("DUPLICATE — SKIP");
+          return prev;
+        }
+
+        console.log("NEW — ADD");
+        scannedSetRef.current.add(decodedText);
+        return [decodedResult, ...prev];
+      });
+
+      console.log(`Scan result: ${decodedText}`, decodedResult);
+
+      html5QrcodeScanner.stop().then(() => {
+        setTimeout(() => {
+          html5QrcodeScanner.start();
+        }, 2000);
+      });
+    }
 
     const removeSecondVideo = () => {
       const videos = document.getElementsByTagName("video");
@@ -129,14 +173,67 @@ function App() {
     }, 250);
 
     return () => {
+      html5QrcodeScanner.clear().catch(() => {});
+
       clearInterval(interval);
     };
   }, []);
 
+  useEffect(() => {
+    console.log("arrOfDecodedResults:", arrOfDecodedResults);
+    console.log("arrOfDecodedResults.length:", arrOfDecodedResults.length);
+  }, [arrOfDecodedResults]);
+
   return (
     <div className="App">
       <div id="reader"></div>
-      <div id="ratio">{aspectRatio}</div>
+      <div className="serviceData">
+        <div className="decodedText">decodedText: {decodedText}</div>
+        <div className="decodedResult">
+          decodedResult:
+          <p>decodedResult.decodedText: {decodedResult.decodedText}</p>
+          <p>
+            decodedResult.result.debugData.decoderName:{" "}
+            {decodedResult.result.debugData.decoderName}
+          </p>
+          <p>
+            decodedResult.result.format.format:{" "}
+            {decodedResult.result.format.format}
+          </p>
+          <p>
+            decodedResult.result.format.formatName:{" "}
+            {decodedResult.result.format.formatName}
+          </p>
+          <p>decodedResult.result.text: {decodedResult.result.text}</p>
+        </div>
+        <div className="errorMessage">ErrorMessage: {errorMessage}</div>
+        <div className="count">Count: {count}</div>
+        <div className="arrLength">ArrLength: {arrOfDecodedResults.length}</div>
+        <div className="arrOfDecodedResults">
+          arrOfDecodedResults:
+          {arrOfDecodedResults.length > 0 &&
+            arrOfDecodedResults.map((item, idx) => (
+              <div className="arrOfDecodedResults__item" key={idx}>
+                <p className="id">Объект №{idx}</p>
+                <div className="decodedResult">
+                  item - decodedResult:
+                  <p>item.decodedText: {item.decodedText}</p>
+                  <p>
+                    item.result.debugData.decoderName:{" "}
+                    {item.result.debugData.decoderName}
+                  </p>
+                  <p>item.result.format.format: {item.result.format.format}</p>
+                  <p>
+                    item.result.format.formatName:{" "}
+                    {item.result.format.formatName}
+                  </p>
+                  <p>item.result.text: {item.result.text}</p>
+                </div>
+              </div>
+            ))}
+        </div>
+        <div id="ratio">aspectRatio: {aspectRatio}</div>
+      </div>
     </div>
   );
 }
