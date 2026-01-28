@@ -36,19 +36,24 @@ function App() {
     }
 
     function onScanSuccess(decodedText, decodedResult) {
-      console.log("onScanSuccess FIRED");
+      console.log("onScanSuccess FIRED", decodedText);
+
       setCount((prev) => prev + 1);
       setDecodedText(decodedText);
       setDecodedResult(decodedResult);
-      setArrOfDecodedResults((prev) => {
-        if (scannedSetRef.current.has(decodedText)) {
-          return prev;
-        }
-        scannedSetRef.current.add(decodedText);
-        return [decodedResult, ...prev];
-      });
 
-      console.log(`Scan result: ${decodedText}`, decodedResult);
+      if (!scannedSetRef.current.has(decodedText)) {
+        scannedSetRef.current.add(decodedText);
+
+        setArrOfDecodedResults((prev) => {
+          const newArr = [decodedResult, ...prev];
+          console.log("Добавлен новый объект:", decodedResult);
+          console.log("Новый массив arrOfDecodedResults:", newArr);
+          return newArr;
+        });
+      } else {
+        console.log("Дубликат, не добавляем:", decodedText);
+      }
     }
 
     const formatsToSupport = [Html5QrcodeSupportedFormats.DATA_MATRIX];
@@ -58,8 +63,8 @@ function App() {
       qrbox: (w, h) => {
         const minEdge = Math.min(w, h);
         return {
-          width: Math.floor(minEdge * 0.7),
-          height: Math.floor(minEdge * 0.7),
+          width: Math.floor(minEdge * 0.8),
+          height: Math.floor(minEdge * 0.8),
         };
       },
       aspectRatio: window.innerWidth / window.innerHeight,
@@ -97,7 +102,7 @@ function App() {
   useRemoveSecondVideo();
 
   useEffect(() => {
-    console.log("arrOfDecodedResults:", arrOfDecodedResults);
+    console.log("arrOfDecodedResults updated:", arrOfDecodedResults);
     console.log("arrOfDecodedResults.length:", arrOfDecodedResults.length);
   }, [arrOfDecodedResults]);
 
@@ -131,7 +136,7 @@ function App() {
           {arrOfDecodedResults.length > 0 &&
             arrOfDecodedResults.map((item, idx) => (
               <div className="arrOfDecodedResults__item" key={idx}>
-                <p className="id">Объект №{idx}</p>
+                <p className="id">Объект №{idx + 1}</p>
                 <div className="decodedResult">
                   item - decodedResult:
                   <p>item.decodedText: {item.decodedText}</p>
