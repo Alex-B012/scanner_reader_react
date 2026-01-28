@@ -60,13 +60,16 @@ function App() {
 
     let config = {
       fps: 10,
-      qrbox: (w, h) => {
-        const minEdge = Math.min(w, h);
-        return {
-          width: Math.floor(minEdge * 0.8),
-          height: Math.floor(minEdge * 0.8),
-        };
-      },
+      // qrbox: (w, h) => {
+      //   const minEdge = Math.min(w, h);
+      //   return {
+      //     width: Math.floor(minEdge * 0.8),
+      //     height: Math.floor(minEdge * 0.8),
+      //   };
+      // },
+
+      qrbox: 200,
+
       aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
       formatsToSupport,
