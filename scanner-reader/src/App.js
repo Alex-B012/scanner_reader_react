@@ -23,6 +23,7 @@ function App() {
   const [arrOfDecodedResults, setArrOfDecodedResults] = useState([]);
   const [count, setCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
+  const [cameraInUse, setCameraInUse] = useState("");
   const scannedSetRef = useRef(new Set());
   const scannerStartedRef = useRef(false);
 
@@ -80,6 +81,10 @@ function App() {
           );
 
           const cameraId = backCamera ? backCamera.id : cameras[0].id;
+
+          setCameraInUse(
+            backCamera ? backCamera.label : `front camera ${cameras[0].id}`,
+          );
 
           html5Qrcode
             .start({ deviceId: cameraId }, config, onScanSuccess, onScanError)
@@ -159,6 +164,7 @@ function App() {
         <div id="ratio " className="bold">
           aspectRatio: {aspectRatio}
         </div>
+        <div className="cameraInUse">Camera in use: {cameraInUse}</div>
       </div>
     </div>
   );
