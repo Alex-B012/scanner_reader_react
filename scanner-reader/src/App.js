@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import "./App.scss";
 
 function App() {
@@ -30,6 +30,24 @@ function App() {
       console.error("Scan error: ", errorMessage);
     }
 
+    function onScanSuccess(decodedText, decodedResult) {
+      console.log("onScanSuccess FIRED");
+      setCount((prev) => prev + 1);
+      setDecodedText(decodedText);
+      setDecodedResult(decodedResult);
+
+      // Добавление в массив без дубликатов
+      setArrOfDecodedResults((prev) => {
+        if (scannedSetRef.current.has(decodedText)) {
+          return prev; // если уже есть — пропускаем
+        }
+        scannedSetRef.current.add(decodedText);
+        return [decodedResult, ...prev]; // добавляем в начало массива
+      });
+
+      console.log(`Scan result: ${decodedText}`, decodedResult);
+    }
+
     let qrboxFunction = function (viewfinderWidth, viewfinderHeight) {
       let minEdgePercentage = 0.7; // 70%
       let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
@@ -52,37 +70,23 @@ function App() {
 
     setAspectRatio(config.aspectRatio);
 
-    const html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
-    html5QrcodeScanner.render(onScanSuccess, onScanError);
+    const html5Qrcode = new Html5Qrcode("reader");
 
-    function onScanSuccess(decodedText, decodedResult) {
-      console.log("onScanSuccess FIRED");
-      setCount((prev) => prev + 1);
-      setDecodedText(decodedText);
-      setDecodedResult(decodedResult);
-
-      setArrOfDecodedResults((prev) => {
-        console.log("CHECK decodedText:", decodedText);
-        console.log("SET contents:", [...scannedSetRef.current]);
-
-        if (scannedSetRef.current.has(decodedText)) {
-          console.log("DUPLICATE — SKIP");
-          return prev;
+    // ---- Исправлено: используем start() ----
+    Html5Qrcode.getCameras()
+      .then((cameras) => {
+        if (cameras && cameras.length) {
+          html5Qrcode.start(
+            { deviceId: cameras[0].id },
+            config,
+            onScanSuccess,
+            onScanError,
+          );
         }
-
-        console.log("NEW — ADD");
-        scannedSetRef.current.add(decodedText);
-        return [decodedResult, ...prev];
+      })
+      .catch((err) => {
+        console.error("Error getting cameras: ", err);
       });
-
-      console.log(`Scan result: ${decodedText}`, decodedResult);
-
-      html5QrcodeScanner.stop().then(() => {
-        setTimeout(() => {
-          html5QrcodeScanner.start();
-        }, 2000);
-      });
-    }
 
     const removeSecondVideo = () => {
       const videos = document.getElementsByTagName("video");
@@ -173,8 +177,8 @@ function App() {
     }, 250);
 
     return () => {
-      html5QrcodeScanner.clear().catch(() => {});
-
+      html5Qrcode.stop().catch(() => {});
+      html5Qrcode.clear().catch(() => {});
       clearInterval(interval);
     };
   }, []);
