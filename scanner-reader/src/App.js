@@ -25,67 +25,64 @@ function App() {
   const scannedSetRef = useRef(new Set());
 
   useEffect(() => {
+    let html5Qrcode = new Html5Qrcode("reader");
+    let scannerStarted = false;
+
     function onScanError(errorMessage) {
       setErrorMessage(errorMessage);
       console.error("Scan error: ", errorMessage);
     }
-
     function onScanSuccess(decodedText, decodedResult) {
       console.log("onScanSuccess FIRED");
       setCount((prev) => prev + 1);
       setDecodedText(decodedText);
       setDecodedResult(decodedResult);
-
-      // Добавление в массив без дубликатов
       setArrOfDecodedResults((prev) => {
         if (scannedSetRef.current.has(decodedText)) {
-          return prev; // если уже есть — пропускаем
+          return prev;
         }
         scannedSetRef.current.add(decodedText);
-        return [decodedResult, ...prev]; // добавляем в начало массива
+        return [decodedResult, ...prev];
       });
 
       console.log(`Scan result: ${decodedText}`, decodedResult);
     }
 
-    let qrboxFunction = function (viewfinderWidth, viewfinderHeight) {
-      let minEdgePercentage = 0.7; // 70%
-      let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
-      let qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
-      return {
-        width: qrboxSize,
-        height: qrboxSize,
-      };
-    };
-
     const formatsToSupport = [Html5QrcodeSupportedFormats.DATA_MATRIX];
-
     let config = {
       fps: 10,
-      qrbox: qrboxFunction,
+      qrbox: (w, h) => {
+        const minEdge = Math.min(w, h);
+        return {
+          width: Math.floor(minEdge * 0.7),
+          height: Math.floor(minEdge * 0.7),
+        };
+      },
       aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
-      formatsToSupport: formatsToSupport,
+      formatsToSupport,
     };
-
     setAspectRatio(config.aspectRatio);
-
-    const html5Qrcode = new Html5Qrcode("reader");
-
-    // ---- Исправлено: используем start() ----
     Html5Qrcode.getCameras()
       .then((cameras) => {
         if (cameras && cameras.length) {
-          html5Qrcode.start(
-            { deviceId: cameras[0].id },
-            config,
-            onScanSuccess,
-            onScanError,
-          );
+          html5Qrcode
+            .start(
+              { deviceId: cameras[0].id },
+              config,
+              onScanSuccess,
+              onScanError,
+            )
+            .then(() => {
+              scannerStarted = true;
+            })
+            .catch((err) => {
+              console.error("Failed to start scanner:", err);
+            });
         }
       })
       .catch((err) => {
-        console.error("Error getting cameras: ", err);
+        console.error("Error getting cameras:", err);
       });
 
     const removeSecondVideo = () => {
@@ -177,7 +174,9 @@ function App() {
     }, 250);
 
     return () => {
-      html5Qrcode.stop().catch(() => {});
+      if (scannerStarted) {
+        html5Qrcode.stop().catch(() => {});
+      }
       html5Qrcode.clear().catch(() => {});
       clearInterval(interval);
     };
