@@ -110,9 +110,9 @@ function App() {
     <div className="App">
       <div id="reader"></div>
       <div className="serviceData">
-        <div className="decodedText">decodedText: {decodedText}</div>
-        <div className="decodedResult">
-          decodedResult:
+        <div className="decodedText bold">decodedText: {decodedText}</div>
+        <div className="decodedResult ">
+          <span className="bold">decodedResult:</span>
           <p>decodedResult.decodedText: {decodedResult.decodedText}</p>
           <p>
             decodedResult.result.debugData.decoderName:{" "}
@@ -131,12 +131,14 @@ function App() {
         <div className="errorMessage">ErrorMessage: {errorMessage}</div>
         <div className="count">Count: {count}</div>
         <div className="arrLength">ArrLength: {arrOfDecodedResults.length}</div>
-        <div className="arrOfDecodedResults">
+        <div className="arrOfDecodedResults bold">
           arrOfDecodedResults:
           {arrOfDecodedResults.length > 0 &&
             arrOfDecodedResults.map((item, idx) => (
               <div className="arrOfDecodedResults__item" key={idx}>
-                <p className="id">Объект №{idx + 1}</p>
+                <p className="arrOfDecodedResults__item-number heading_test">
+                  Объект №{idx + 1}
+                </p>
                 <div className="decodedResult">
                   item - decodedResult:
                   <p>item.decodedText: {item.decodedText}</p>
@@ -154,7 +156,9 @@ function App() {
               </div>
             ))}
         </div>
-        <div id="ratio">aspectRatio: {aspectRatio}</div>
+        <div id="ratio " className="bold">
+          aspectRatio: {aspectRatio}
+        </div>
       </div>
     </div>
   );
