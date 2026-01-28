@@ -75,13 +75,14 @@ function App() {
     Html5Qrcode.getCameras()
       .then((cameras) => {
         if (cameras && cameras.length) {
+          const backCamera = cameras.find((camera) =>
+            /back|rear|environment/gi.test(camera.label),
+          );
+
+          const cameraId = backCamera ? backCamera.id : cameras[0].id;
+
           html5Qrcode
-            .start(
-              { deviceId: cameras[0].id },
-              config,
-              onScanSuccess,
-              onScanError,
-            )
+            .start({ deviceId: cameraId }, config, onScanSuccess, onScanError)
             .then(() => {
               scannerStartedRef.current = true;
             })
