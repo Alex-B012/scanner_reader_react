@@ -68,11 +68,24 @@ function App() {
       //   };
       // },
 
-      qrbox: 200,
+      // qrbox: (w, h) => {
+      //   const minEdge = Math.min(w, h);
+      //   return {
+      //     width: 250,
+      //     height: 250,
+      //   };
+      // },
+
+      // qrbox: 250,
+
+      qrbox: 250,
 
       aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
       formatsToSupport,
+      videoConstraints: {
+        facingMode: "environment",
+      },
     };
     setAspectRatio(config.aspectRatio);
 
