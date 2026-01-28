@@ -38,6 +38,35 @@ export const useRemoveSecondVideo = () => {
       }
     };
 
+    const pausedDivs = Array.from(document.querySelectorAll("div")).filter(
+      (div) =>
+        div.textContent.trim() === "Scanner paused" &&
+        div.style.position === "absolute" &&
+        div.style.display === "none",
+    );
+
+    if (pausedDivs.length > 1) {
+      pausedDivs.forEach((div, index) => {
+        if (index > 0) {
+          div.remove();
+          console.log("Duplicate 'Scanner paused' div removed.");
+        }
+      });
+    }
+
+    const zoomDivs = Array.from(document.querySelectorAll("div")).filter(
+      (div) => div.querySelector("#html5-qrcode-input-range-zoom"),
+    );
+
+    if (zoomDivs.length > 1) {
+      zoomDivs.forEach((div, index) => {
+        if (index > 0) {
+          div.remove();
+          console.log("Duplicate zoom slider removed.");
+        }
+      });
+    }
+
     const interval = setInterval(() => {
       const videos = document.getElementsByTagName("video");
       if (videos.length > 1) {

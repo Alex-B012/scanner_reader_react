@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
+import { useRemoveSecondVideo } from "./hooks/useRemoveSecondVideo";
 import "./App.scss";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
   const [count, setCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const scannedSetRef = useRef(new Set());
+  const scannerStartedRef = useRef(false);
 
   useEffect(() => {
     let html5Qrcode = new Html5Qrcode("reader");
@@ -32,6 +34,7 @@ function App() {
       setErrorMessage(errorMessage);
       console.error("Scan error: ", errorMessage);
     }
+
     function onScanSuccess(decodedText, decodedResult) {
       console.log("onScanSuccess FIRED");
       setCount((prev) => prev + 1);
@@ -49,6 +52,7 @@ function App() {
     }
 
     const formatsToSupport = [Html5QrcodeSupportedFormats.DATA_MATRIX];
+
     let config = {
       fps: 10,
       qrbox: (w, h) => {
@@ -63,6 +67,7 @@ function App() {
       formatsToSupport,
     };
     setAspectRatio(config.aspectRatio);
+
     Html5Qrcode.getCameras()
       .then((cameras) => {
         if (cameras && cameras.length) {
@@ -74,113 +79,22 @@ function App() {
               onScanError,
             )
             .then(() => {
-              scannerStarted = true;
+              scannerStartedRef.current = true;
             })
-            .catch((err) => {
-              console.error("Failed to start scanner:", err);
-            });
+            .catch((err) => console.error("Failed to start scanner:", err));
         }
       })
-      .catch((err) => {
-        console.error("Error getting cameras:", err);
-      });
-
-    const removeSecondVideo = () => {
-      const videos = document.getElementsByTagName("video");
-      if (videos.length > 1) {
-        console.log("videos", videos);
-        videos[1].remove();
-        console.log("Second video element removed.");
-      }
-
-      const startBtns = document.getElementsByClassName("html5-qrcode-element");
-
-      if (startBtns.length > 1) {
-        console.log("startBtns", startBtns);
-        startBtns[1].remove();
-        console.log("Second startBtns element removed.");
-      }
-
-      const spans = document.querySelectorAll("span");
-
-      spans.forEach((span, index) => {
-        const buttons = span.querySelectorAll(".html5-qrcode-element");
-
-        if (
-          buttons.length === 2 &&
-          buttons[0].id === "html5-qrcode-button-camera-start" &&
-          buttons[1].id === "html5-qrcode-button-camera-stop"
-        ) {
-          const firstSpan = Array.from(spans).find(
-            (s) =>
-              s.querySelectorAll(".html5-qrcode-element").length === 2 &&
-              s.querySelector("#html5-qrcode-button-camera-start") &&
-              s.querySelector("#html5-qrcode-button-camera-stop"),
-          );
-
-          if (firstSpan && span !== firstSpan) {
-            span.remove();
-            console.log("Duplicate span removed:", span);
-          }
-        }
-      });
-
-      const shadedDivs = document.querySelectorAll("#qr-shaded-region");
-      if (shadedDivs.length > 1) {
-        shadedDivs.forEach((div, index) => {
-          if (index > 0) {
-            div.remove();
-            console.log("Duplicate qr-shaded-region removed.");
-          }
-        });
-      }
-    };
-
-    const pausedDivs = Array.from(document.querySelectorAll("div")).filter(
-      (div) =>
-        div.textContent.trim() === "Scanner paused" &&
-        div.style.position === "absolute" &&
-        div.style.display === "none",
-    );
-
-    if (pausedDivs.length > 1) {
-      pausedDivs.forEach((div, index) => {
-        if (index > 0) {
-          div.remove();
-          console.log("Duplicate 'Scanner paused' div removed.");
-        }
-      });
-    }
-
-    const zoomDivs = Array.from(document.querySelectorAll("div")).filter(
-      (div) => div.querySelector("#html5-qrcode-input-range-zoom"),
-    );
-
-    if (zoomDivs.length > 1) {
-      zoomDivs.forEach((div, index) => {
-        if (index > 0) {
-          div.remove();
-          console.log("Duplicate zoom slider removed.");
-        }
-      });
-    }
-
-    const interval = setInterval(() => {
-      const videos = document.getElementsByTagName("video");
-      if (videos.length > 1) {
-        removeSecondVideo();
-        clearInterval(interval);
-      }
-    }, 250);
+      .catch((err) => console.error("Error getting cameras:", err));
 
     return () => {
-      if (scannerStarted) {
-        html5Qrcode.stop().catch(() => {});
+      if (scannerStartedRef.current) {
+        html5Qrcode.stop?.().catch(() => {});
+        html5Qrcode.clear?.().catch(() => {});
       }
-      html5Qrcode.clear().catch(() => {});
-      clearInterval(interval);
     };
   }, []);
+
+  useRemoveSecondVideo();
 
   useEffect(() => {
     console.log("arrOfDecodedResults:", arrOfDecodedResults);
