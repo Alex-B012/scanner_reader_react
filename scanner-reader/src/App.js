@@ -76,7 +76,7 @@ function App() {
       .then((cameras) => {
         if (cameras && cameras.length) {
           const backCamera = cameras.find((camera) =>
-            /back|rear|environment/gi.test(camera.label),
+            /environment|back|rear/gi.test(camera.label),
           );
 
           const cameraId = backCamera ? backCamera.id : cameras[0].id;
