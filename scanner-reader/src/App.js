@@ -28,7 +28,6 @@ function App() {
 
   useEffect(() => {
     let html5Qrcode = new Html5Qrcode("reader");
-    let scannerStarted = false;
 
     function onScanError(errorMessage) {
       setErrorMessage(errorMessage);
