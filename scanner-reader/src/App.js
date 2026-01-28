@@ -82,7 +82,7 @@ function App() {
 
       aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
-      formatsToSupport,
+      formatsToSupport: formatsToSupport,
       // videoConstraints: {
       //   facingMode: "environment",
       // },
