@@ -83,9 +83,9 @@ function App() {
       aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
       formatsToSupport,
-      videoConstraints: {
-        facingMode: "environment",
-      },
+      // videoConstraints: {
+      //   facingMode: "environment",
+      // },
     };
     setAspectRatio(config.aspectRatio);
 
