@@ -34,6 +34,7 @@
   min-height: fit-content;
   position: fixed;
   display: flex;
+  bottom: 0;
   flex-direction: column;
   margin-top: -50vh;
   // color: rgb(185, 255, 105);
@@ -41,7 +42,7 @@
   word-break: break-word;
   overflow-wrap: break-word;
   z-index: 110;
-  display: none;
+  // display: none;
 }
 
 .heading_test {
