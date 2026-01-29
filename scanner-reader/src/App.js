@@ -28,9 +28,17 @@ function App() {
   const scannerStartedRef = useRef(false);
 
   useEffect(() => {
-    let html5Qrcode = new Html5Qrcode("reader", {
-      verbose: false,
-    });
+    let config = {
+      fps: 15,
+      qrbox: 250,
+      aspectRatio: window.innerWidth / window.innerHeight,
+      rememberLastUsedCamera: true,
+      formatsToSupport: [Html5QrcodeSupportedFormats.DATA_MATRIX],
+    };
+
+    setAspectRatio(config.aspectRatio);
+
+    let html5Qrcode = new Html5Qrcode("reader", config);
 
     function onScanError(errorMessage) {
       setErrorMessage(errorMessage);
@@ -65,20 +73,6 @@ function App() {
         console.log("Дубликат, не добавляем:", decodedText);
       }
     }
-
-    const formatsToSupport = [Html5QrcodeSupportedFormats.DATA_MATRIX];
-
-    let config = {
-      fps: 20,
-      qrbox: 250,
-      aspectRatio: window.innerWidth / window.innerHeight,
-      rememberLastUsedCamera: true,
-      formatsToSupport: formatsToSupport,
-      // videoConstraints: {
-      //   facingMode: "environment",
-      // },
-    };
-    setAspectRatio(config.aspectRatio);
 
     Html5Qrcode.getCameras()
       .then((cameras) => {
