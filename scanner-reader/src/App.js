@@ -39,7 +39,8 @@ function App() {
           height: 240,
         };
       },
-      aspectRatio: window.innerWidth / window.innerHeight,
+      // aspectRatio: window.innerWidth / window.innerHeight,
+      aspectRatio: 4 / 3,
       rememberLastUsedCamera: true,
       formatsToSupport: [Html5QrcodeSupportedFormats.DATA_MATRIX],
     };
