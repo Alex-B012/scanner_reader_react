@@ -28,7 +28,9 @@ function App() {
   const scannerStartedRef = useRef(false);
 
   useEffect(() => {
-    let html5Qrcode = new Html5Qrcode("reader");
+    let html5Qrcode = new Html5Qrcode("reader", {
+      verbose: false,
+    });
 
     function onScanError(errorMessage) {
       setErrorMessage(errorMessage);
@@ -42,7 +44,15 @@ function App() {
       setDecodedText(decodedText);
       setDecodedResult(decodedResult);
 
-      if (!scannedSetRef.current.has(decodedText)) {
+      console.log(
+        "QR_code format name:",
+        decodedResult.result.format.formatName,
+      );
+
+      if (
+        !scannedSetRef.current.has(decodedText) &&
+        decodedResult.result.format.formatName === "DATA_MATRIX"
+      ) {
         scannedSetRef.current.add(decodedText);
 
         setArrOfDecodedResults((prev) => {
@@ -59,27 +69,8 @@ function App() {
     const formatsToSupport = [Html5QrcodeSupportedFormats.DATA_MATRIX];
 
     let config = {
-      fps: 10,
-      // qrbox: (w, h) => {
-      //   const minEdge = Math.min(w, h);
-      //   return {
-      //     width: Math.floor(minEdge * 0.8),
-      //     height: Math.floor(minEdge * 0.8),
-      //   };
-      // },
-
-      // qrbox: (w, h) => {
-      //   const minEdge = Math.min(w, h);
-      //   return {
-      //     width: 250,
-      //     height: 250,
-      //   };
-      // },
-
-      // qrbox: 250,
-
+      fps: 20,
       qrbox: 250,
-
       aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
       formatsToSupport: formatsToSupport,
