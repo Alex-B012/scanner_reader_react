@@ -40,7 +40,8 @@ function App() {
         };
       },
       // aspectRatio: window.innerWidth / window.innerHeight,
-      aspectRatio: 16 / 9,
+      // aspectRatio: 16 / 9,
+      aspectRatio: window.innerHeight / window.innerWidth,
       rememberLastUsedCamera: true,
       formatsToSupport: [Html5QrcodeSupportedFormats.DATA_MATRIX],
     };
