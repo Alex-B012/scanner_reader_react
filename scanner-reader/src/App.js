@@ -29,10 +29,10 @@ function App() {
 
   useEffect(() => {
     let config = {
-      fps: 20,
+      fps: 30,
       qrbox: 250,
       // aspectRatio: window.innerWidth / window.innerHeight,
-      aspectRatio: 1,
+      // aspectRatio: 1,
       rememberLastUsedCamera: true,
       formatsToSupport: [Html5QrcodeSupportedFormats.DATA_MATRIX],
     };
