@@ -39,7 +39,7 @@ function App() {
           height: 250,
         };
       },
-      // aspectRatio: window.innerWidth / window.innerHeight,
+      aspectRatio: window.innerWidth / window.innerHeight,
       rememberLastUsedCamera: true,
       formatsToSupport: [Html5QrcodeSupportedFormats.DATA_MATRIX],
     };
