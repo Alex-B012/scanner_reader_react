@@ -35,8 +35,8 @@ function App() {
         return {
           // width: Math.floor(minEdge * 0.7),
           // height: Math.floor(minEdge * 0.7),
-          width: 280,
-          height: 250,
+          width: 320,
+          height: 240,
         };
       },
       aspectRatio: window.innerWidth / window.innerHeight,
