@@ -30,9 +30,16 @@ function App() {
   useEffect(() => {
     let config = {
       fps: 30,
-      qrbox: 250,
+      qrbox: (w, h) => {
+        // const minEdge = Math.min(w, h);
+        return {
+          // width: Math.floor(minEdge * 0.7),
+          // height: Math.floor(minEdge * 0.7),
+          width: 280,
+          height: 250,
+        };
+      },
       // aspectRatio: window.innerWidth / window.innerHeight,
-      // aspectRatio: 1,
       rememberLastUsedCamera: true,
       formatsToSupport: [Html5QrcodeSupportedFormats.DATA_MATRIX],
     };
