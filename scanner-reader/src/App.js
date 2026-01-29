@@ -40,7 +40,7 @@ function App() {
         };
       },
       // aspectRatio: window.innerWidth / window.innerHeight,
-      aspectRatio: 4 / 3,
+      aspectRatio: 16 / 9,
       rememberLastUsedCamera: true,
       formatsToSupport: [Html5QrcodeSupportedFormats.DATA_MATRIX],
     };
